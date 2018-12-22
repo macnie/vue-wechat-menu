@@ -23,7 +23,7 @@
                 <div class="menu_bottom menu_addicon" v-if="menuKeyLength < 3" @click="addMenu"><i
                         class="el-icon-plus"></i></div>
             </div>
-            <el-button class="save_btn" type="success" @click="saveFun">保存并发布至菜单</el-button>
+            <el-button :disable="loading" :loading="loading" class="save_btn" type="success" @click="saveFun">保存并发布至菜单</el-button>
         </div>
         <!--右边配置-->
         <el-card v-if="!showRightFlag" class="right">
@@ -156,6 +156,7 @@
         props: {},
         data() {
             return {
+                loading:false,
                 showRightFlag: true,//右边配置显示默认详情还是配置详情
                 menu: {
                     // // 一级菜单
@@ -236,8 +237,20 @@
                 this.tempObj.media_id = row.name;
             },
             saveFun() {
+                this.loading = true;
                 this.$http.post('/api/wechat/menu', this.menu).then((res) => {
-                    alert(res.data.message)
+                    this.loading = false;
+                    if(res.data.status == 0){
+                        this.$message({
+                            message: res.data.message,
+                            type: 'success'
+                        });
+                    }else{
+                        this.$message({
+                            message: res.data.message,
+                            type: 'error'
+                        });
+                    }
                 })
             },
             // 一级菜单点击事件
